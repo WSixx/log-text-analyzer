@@ -1,4 +1,9 @@
-import br.com.lucad.logtextanalyzer.ProjectConfig
+import br.com.lucad.logtextanalyzer.compileSdk
+import br.com.lucad.logtextanalyzer.javaVersion
+import br.com.lucad.logtextanalyzer.libs
+import br.com.lucad.logtextanalyzer.minSdk
+import br.com.lucad.logtextanalyzer.ndkVersion
+import br.com.lucad.logtextanalyzer.targetSdk
 import com.android.build.api.dsl.ApplicationExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -12,11 +17,12 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
             }
 
             extensions.configure<ApplicationExtension> {
-                compileSdk = ProjectConfig.COMPILE_SDK
+                compileSdk = libs.compileSdk
+                ndkVersion = libs.ndkVersion
 
                 defaultConfig {
-                    minSdk = ProjectConfig.MIN_SDK
-                    targetSdk = ProjectConfig.TARGET_SDK
+                    minSdk = libs.minSdk
+                    targetSdk = libs.targetSdk
                 }
 
                 buildTypes {
@@ -36,8 +42,8 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                 }
 
                 compileOptions {
-                    sourceCompatibility = ProjectConfig.JAVA_VERSION
-                    targetCompatibility = ProjectConfig.JAVA_VERSION
+                    sourceCompatibility = javaVersion
+                    targetCompatibility = javaVersion
                 }
             }
         }

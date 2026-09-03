@@ -1,4 +1,9 @@
 [versions]
+compileSdk = "37"
+minSdk = "28"
+targetSdk = "37"
+ndk = "29.0.14206865"
+
 kotlin = "2.4.10"
 agp = "9.3.2"
 
