@@ -14,6 +14,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import br.com.lucad.logtextanalyzer.ui.theme.LogTextAnalyzerTheme
 
 class MainActivity : ComponentActivity() {
+
+    companion object {
+        init {
+            System.loadLibrary("nativeanalyzer")
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
