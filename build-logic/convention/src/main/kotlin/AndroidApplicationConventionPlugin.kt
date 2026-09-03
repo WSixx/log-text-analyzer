@@ -19,6 +19,22 @@ class AndroidApplicationConventionPlugin : Plugin<Project> {
                     targetSdk = ProjectConfig.TARGET_SDK
                 }
 
+                buildTypes {
+                    getByName("debug") {
+                        isDebuggable = true
+                        applicationIdSuffix = ".debug"
+                    }
+
+                    getByName("release") {
+                        isMinifyEnabled = true
+                        isShrinkResources = true
+                        proguardFiles(
+                            getDefaultProguardFile("proguard-android-optimize.txt"),
+                            "proguard-rules.pro"
+                        )
+                    }
+                }
+
                 compileOptions {
                     sourceCompatibility = ProjectConfig.JAVA_VERSION
                     targetCompatibility = ProjectConfig.JAVA_VERSION

@@ -18,6 +18,17 @@ class AndroidLibraryConventionPlugin : Plugin<Project> {
                     minSdk = ProjectConfig.MIN_SDK
                 }
 
+                buildTypes {
+                    getByName("debug") {
+                        // Debug build type defaults
+                    }
+
+                    getByName("release") {
+                        isMinifyEnabled = false
+                        consumerProguardFiles("consumer-rules.pro")
+                    }
+                }
+
                 compileOptions {
                     sourceCompatibility = ProjectConfig.JAVA_VERSION
                     targetCompatibility = ProjectConfig.JAVA_VERSION
