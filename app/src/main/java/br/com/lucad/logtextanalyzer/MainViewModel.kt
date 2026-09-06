@@ -17,12 +17,23 @@ class MainViewModel(
     private val _headerText = MutableStateFlow("Type Text")
     val headerText: StateFlow<String> = _headerText.asStateFlow()
 
+    companion object {
+        const val MOCK_LOG = """2026-03-30 10:15:01.123 INFO  [MainThread]: Starting application initialization...
+2026-03-30 10:15:02.456 DEBUG [NetworkModule]: Connecting to backend endpoint https://api.example.com/v1/data
+2026-03-30 10:15:03.789 ERROR [NetworkModule]: Connection timeout after 5000ms. Retrying (1/3)
+2026-03-30 10:15:05.101 WARN  [CacheManager]: Cache miss for key 'user_settings'. Falling back to local DB.
+2026-03-30 10:15:06.222 ERROR [DatabaseModule]: Failed to open SQLite database: Database disk image is malformed.
+2026-03-30 10:15:07.333 INFO  [AuthManager]: User session restored for user_id=1042
+2026-03-30 10:15:08.888 ERROR [SyncWorker]: Background sync failed with StatusCode 500 Internal Server Error."""
+    }
+
     fun analyzeLog() {
         viewModelScope.launch {
             val result = withContext(Dispatchers.Default) {
-                nativeLib.stringFromJNI()
+                val stats = nativeLib.parseLog(MOCK_LOG, "ERROR")
+                stats
             }
-            _headerText.value = result
+            _headerText.value = result.contentToString()
         }
     }
 }
