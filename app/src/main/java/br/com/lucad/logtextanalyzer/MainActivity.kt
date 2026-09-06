@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,6 +18,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -25,28 +28,33 @@ import br.com.lucad.logtextanalyzer.ui.theme.LogTextAnalyzerTheme
 
 class MainActivity : ComponentActivity() {
 
-    companion object {
-        init {
-            System.loadLibrary("nativeanalyzer")
-        }
-    }
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             LogTextAnalyzerTheme {
-                MainApp(Modifier.fillMaxSize())
+                MainApp(
+                    viewModel = viewModel,
+                    modifier = Modifier.fillMaxSize()
+                )
             }
         }
     }
 }
 
 @Composable
-fun MainApp(modifier: Modifier = Modifier) {
+fun MainApp(
+    viewModel: MainViewModel,
+    modifier: Modifier = Modifier
+) {
+    val headerText by viewModel.headerText.collectAsState()
+
     Scaffold(modifier = modifier.fillMaxSize()) { innerPadding ->
         LogAnalyzerContent(
-            onAnalyzeClick = {},
+            headerText = headerText,
+            onAnalyzeClick = { viewModel.analyzeLog() },
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
@@ -55,7 +63,11 @@ fun MainApp(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun LogAnalyzerContent(onAnalyzeClick: () -> Unit, modifier: Modifier = Modifier) {
+fun LogAnalyzerContent(
+    headerText: String,
+    onAnalyzeClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Surface(
         modifier = modifier,
         color = MaterialTheme.colorScheme.background,
@@ -66,7 +78,6 @@ fun LogAnalyzerContent(onAnalyzeClick: () -> Unit, modifier: Modifier = Modifier
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
-
         ) {
             ElevatedCard(
                 modifier = Modifier.fillMaxWidth(),
@@ -81,7 +92,10 @@ fun LogAnalyzerContent(onAnalyzeClick: () -> Unit, modifier: Modifier = Modifier
                         .padding(24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    TextHeader(modifier = Modifier.padding(bottom = 20.dp))
+                    TextHeader(
+                        text = headerText,
+                        modifier = Modifier.padding(bottom = 20.dp)
+                    )
                     ElevatedButton(
                         onClick = onAnalyzeClick,
                         modifier = Modifier.fillMaxWidth()
@@ -95,9 +109,9 @@ fun LogAnalyzerContent(onAnalyzeClick: () -> Unit, modifier: Modifier = Modifier
 }
 
 @Composable
-fun TextHeader(modifier: Modifier = Modifier) {
+fun TextHeader(text: String, modifier: Modifier = Modifier) {
     Text(
-        text = "Type Text",
+        text = text,
         style = MaterialTheme.typography.headlineMedium,
         modifier = modifier
     )
@@ -107,6 +121,9 @@ fun TextHeader(modifier: Modifier = Modifier) {
 @Composable
 fun MainAppPreview() {
     LogTextAnalyzerTheme(dynamicColor = false) {
-        MainApp()
+        LogAnalyzerContent(
+            headerText = "Type Text",
+            onAnalyzeClick = {}
+        )
     }
 }
