@@ -26,7 +26,7 @@ Java_br_com_lucad_nativeanalyzer_NativeLib_stringFromJNI(
 JNIEXPORT jintArray JNICALL
 Java_br_com_lucad_nativeanalyzer_NativeLib_parseLog(JNIEnv *env, jobject thiz, jstring text,
                                                     jstring keyword) {
-
+    (void) thiz;
     if (text == nullptr || keyword == nullptr) {
         return nullptr;
     }
@@ -42,19 +42,33 @@ Java_br_com_lucad_nativeanalyzer_NativeLib_parseLog(JNIEnv *env, jobject thiz, j
 
     LogStats logStats = analyze_buffer(textLocal, keyWordLocal);
 
+    jint data[3];
+    data[0] = logStats.line_count;
+    data[1] = logStats.char_count;
+    data[2] = logStats.keyword_matchers;
+
     //releasing
     (*env)->ReleaseStringUTFChars(env, text, textLocal);
     (*env)->ReleaseStringUTFChars(env, keyword, keyWordLocal);
-    return
+
+    jintArray result = (*env)->NewIntArray(env, 3);
+    if (result == nullptr) return nullptr;
+    (*env)->SetIntArrayRegion(env, result, 0, 3, data);
+
+    return result;
 }
 
 LogStats analyze_buffer(const char *buffer, const char *keyword) {
     const char *ptr = buffer;
     const char *ptrKeyWord = keyword;
     LogStats logStats = {};
+    if (*ptr == '\0') {
+        logStats.line_count = 0;
+    } else {
+        logStats.line_count = 1;
+    }
 
     while (*ptr != '\0') {
-
         if (*ptr == *ptrKeyWord) {
             const char *ptrLocal = ptr;
             while (*ptrLocal == *ptrKeyWord && *ptrLocal != '\0') {
@@ -74,7 +88,7 @@ LogStats analyze_buffer(const char *buffer, const char *keyword) {
         ptr++;
     }
     ptrdiff_t charCount = ptr - buffer;
-    LOGI("Char Count %d", charCount);
-    logStats.char_count = charCount;
+    LOGI("Char Count %td", charCount);
+    logStats.char_count = (int)charCount;
     return logStats;
 }

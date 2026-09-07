@@ -3,7 +3,7 @@ package br.com.lucad.nativeanalyzer
 data class LogAnalysisResult(
     val lineCount: Int,
     val charCount: Int,
-    val errorCount: Int,
+    val keywordCount: Int,
 )
 
 class NativeLib {
