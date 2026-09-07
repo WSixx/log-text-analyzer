@@ -36,7 +36,7 @@ class MainViewModel(
     fun analyzeLog() {
         viewModelScope.launch {
             val result = withContext(Dispatchers.Default) {
-                val stats = nativeLib.parseLog(MOCK_LOG_4, "ERROR")
+                val stats = nativeLib.parseLog(MOCK_LOG, "")
                 LogAnalysisResult(
                     lineCount = stats[0],
                     charCount = stats[1],
